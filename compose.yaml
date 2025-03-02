@@ -34,7 +34,7 @@ services:
 
 configs:
   alloy:
-    name: alloy4
+    name: alloy5
     file: config.alloy
   entrypoint:
     name: entrypoint1
