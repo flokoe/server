@@ -1,0 +1,138 @@
+---
+
+- name: Configure Soerver
+  hosts: all
+
+  handlers:
+    - name: Reload sshd
+      ansible.builtin.service:
+        name: ssh
+        state: reloaded
+
+  tasks:
+    - name: Set timezone to Europe/Berlin
+      community.general.timezone:
+        name: Europe/Berlin
+
+    - name: Start and enable systemd-timesyncd
+      ansible.builtin.service:
+        name: systemd-timesyncd
+        enabled: true
+        state: started
+
+    - name: Set root password
+      ansible.builtin.user:
+        name: root
+        password: $6$NEE6WDR8Up1i9az3$foA2wtkq9wnCG0XXYweDZwDOGFSyzPOU1ClqmYD.6j4MSW4CoapHPXXsebxVSiRKgB/unmLgPX.sz5tkfvZVn0  # yamllint disable-line
+
+    - name: Create user flokoe
+      ansible.builtin.user:
+        name: flokoe
+        password: "!"
+        shell: /usr/bin/bash
+
+    - name: Add ssh key to authorized_keys
+      ansible.posix.authorized_key:
+        user: flokoe
+        state: present
+        exclusive: true
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+
+    - name: Create custom sudo rule for user flokoe
+      ansible.builtin.copy:
+        content: "flokoe ALL=(ALL) NOPASSWD: ALL"
+        dest: /etc/sudoers.d/flokoe
+        mode: "0640"
+        validate: visudo -cf %s
+
+    - name: Get gpg key for docker repo
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: "0644"
+        checksum: sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570  # yamllint disable-line
+
+    - name: Add source for docker repo
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"  # yamllint disable-line
+        state: present
+
+    - name: Install packages
+      ansible.builtin.apt:
+        state: present
+        update_cache: true
+        name:
+          - vim
+          - ca-certificates
+          - apt-transport-https
+          - python3-gi
+          - unattended-upgrades
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+
+    - name: Enable auto upgrades
+      ansible.builtin.copy:
+        mode: "0640"
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Enable "1";
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Download-Upgradeable-Packages "1";
+          APT::Periodic::Unattended-Upgrade "1";
+          APT::Periodic::AutocleanInterval "21";
+
+    - name: Configure unattended-upgrades
+      ansible.builtin.copy:
+        mode: "0640"
+        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+        backup: true
+        content: |
+          Unattended-Upgrade::AutoFixInterruptedDpkg "true";
+          Unattended-Upgrade::MinimalSteps "true";
+          Unattended-Upgrade::InstallOnShutdown "true";
+          Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+          Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+          Unattended-Upgrade::Remove-Unused-Dependencies "true";
+          Unattended-Upgrade::Automatic-Reboot "true";
+          Unattended-Upgrade::Automatic-Reboot-Time "03:17";
+
+          Unattended-Upgrade::Origins-Pattern {
+            "origin=Debian,codename=${distro_codename},label=Debian";
+            "origin=Debian,codename=${distro_codename},label=Debian-Security";
+            "origin=Debian,codename=${distro_codename}-security,label=Debian-Security";
+          };
+
+          Unattended-Upgrade::Package-Blacklist {
+          };
+
+    - name: Hardening sshd
+      notify:
+        - Reload sshd
+      ansible.builtin.copy:
+        mode: "0640"
+        dest: /etc/ssh/sshd_config.d/zz.conf
+        validate: sshd -tf %s
+        # yamllint disable rule:line-length
+        content: |
+          HostKey /etc/ssh/ssh_host_ed25519_key
+          HostKey /etc/ssh/ssh_host_rsa_key
+          KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+          Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+          MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com
+          AuthenticationMethods publickey
+          LogLevel VERBOSE
+          KbdInteractiveAuthentication no
+          MaxAuthTries 3
+          PasswordAuthentication no
+          PermitRootLogin no
+          X11Forwarding no
+        # yamllint enable
+
+    - name: Ensure docker is enabled and running
+      ansible.builtin.service:
+        name: docker
+        enabled: true
+        state: started

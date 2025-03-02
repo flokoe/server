@@ -27,3 +27,8 @@ repos:
       - id: tofu_fmt
       - id: tofu_tflint
       - id: tofu_trivy
+
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v25.1.3
+    hooks:
+      - id: ansible-lint
