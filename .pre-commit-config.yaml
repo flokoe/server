@@ -1,0 +1,29 @@
+---
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # - id: no-commit-to-branch
+      - id: check-json
+      - id: pretty-format-json
+        args: ["--autofix", "--no-ensure-ascii"]
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: ["--format", "parsable", "--strict"]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.0
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/tofuutils/pre-commit-opentofu
+    rev: v2.1.0
+    hooks:
+      - id: tofu_validate
+      - id: tofu_fmt
+      - id: tofu_tflint
+      - id: tofu_trivy
