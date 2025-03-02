@@ -30,6 +30,8 @@
         name: flokoe
         password: "!"
         shell: /usr/bin/bash
+        groups:
+          - docker
 
     - name: Add ssh key to authorized_keys
       ansible.posix.authorized_key:
@@ -136,3 +138,7 @@
         name: docker
         enabled: true
         state: started
+
+    - name: Init a new swarm with default parameters
+      community.docker.docker_swarm:
+        state: present
