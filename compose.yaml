@@ -30,10 +30,11 @@ services:
     volumes:
       - "alloy:/var/lib/alloy/data"
       - "/:/host:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 configs:
   alloy:
-    name: alloy3
+    name: alloy4
     file: config.alloy
   entrypoint:
     name: entrypoint1
