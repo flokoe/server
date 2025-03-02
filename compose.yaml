@@ -1,6 +1,20 @@
 ---
 
 services:
+  caddy:
+    image: caddy:2.9.1-alpine@sha256:b4e3952384eb9524a887633ce65c752dd7c71314d2c2acf98cd5c715aaa534f0  # yamllint disable-line rule:line-length
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    configs:
+      - source: caddyfile
+        target: /etc/caddy/Caddyfile
+    volumes:
+      - "caddy_data:/data"
+      - "caddy_config:/config"
+
   alloy:
     image: grafana/alloy:v1.7.1@sha256:da938bc7dc6a96be31d3c93badc445aed115ca39357734de7a338f78fa342cf7  # yamllint disable-line rule:line-length
     entrypoint: /entrypoint.sh
@@ -33,6 +47,9 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 configs:
+  caddyfile:
+    name: caddyfile5
+    file: Caddyfile
   alloy:
     name: alloy5
     file: config.alloy
@@ -49,4 +66,6 @@ secrets:
     file: secrets/gcloud_rw_api_key
 
 volumes:
+  caddy_data:
+  caddy_config:
   alloy:

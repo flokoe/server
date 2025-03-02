@@ -1,0 +1,10 @@
+{
+	servers {
+		metrics
+	}
+}
+
+www.flokoe.de {
+	log
+	file_server
+}
