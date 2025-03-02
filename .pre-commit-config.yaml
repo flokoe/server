@@ -32,3 +32,4 @@ repos:
     rev: v25.1.3
     hooks:
       - id: ansible-lint
+        args: ["main.yaml"]

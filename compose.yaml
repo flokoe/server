@@ -1,0 +1,51 @@
+---
+
+services:
+  alloy:
+    image: grafana/alloy:v1.7.1@sha256:da938bc7dc6a96be31d3c93badc445aed115ca39357734de7a338f78fa342cf7  # yamllint disable-line rule:line-length
+    entrypoint: /entrypoint.sh
+    command:
+      - /bin/alloy
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    restart: unless-stopped
+    environment:
+      GCLOUD_HOSTED_METRICS_URL: "https://prometheus-prod-24-prod-eu-west-2.grafana.net/api/prom/push"  # yamllint disable-line rule:line-length
+      GCLOUD_HOSTED_LOGS_URL: "https://logs-prod-012.grafana.net/loki/api/v1/push"  # yamllint disable-line rule:line-length
+      GCLOUD_SCRAPE_INTERVAL: 60s
+    ports:
+      - "12345:12345"
+    configs:
+      - source: alloy
+        target: /etc/alloy/config.alloy
+      - source: entrypoint
+        target: /entrypoint.sh
+        mode: 0755
+    secrets:
+      - gcloud_hosted_metrics_id
+      - gcloud_hosted_logs_id
+      - gcloud_rw_api_key
+    volumes:
+      - "alloy:/var/lib/alloy/data"
+      - "/:/host:ro"
+
+configs:
+  alloy:
+    name: alloy3
+    file: config.alloy
+  entrypoint:
+    name: entrypoint1
+    file: entrypoint.sh
+
+secrets:
+  gcloud_hosted_metrics_id:
+    file: secrets/gcloud_hosted_metrics_id
+  gcloud_hosted_logs_id:
+    file: secrets/gcloud_hosted_logs_id
+  gcloud_rw_api_key:
+    file: secrets/gcloud_rw_api_key
+
+volumes:
+  alloy:
