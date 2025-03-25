@@ -3,3 +3,4 @@
 .ansible
 secrets/
 devbox.d
+terraform.tfstate*
