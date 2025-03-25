@@ -3,6 +3,11 @@
 - name: Configure Soerver
   hosts: all
 
+  vars:
+    projects:
+      - p743j
+      - yrd39
+
   handlers:
     - name: Reload sshd
       ansible.builtin.service:
@@ -74,6 +79,7 @@
           - containerd.io
           - docker-buildx-plugin
           - docker-compose-plugin
+          - python3-docker
 
     - name: Enable auto upgrades
       ansible.builtin.copy:
@@ -142,3 +148,43 @@
     - name: Init a new swarm with default parameters
       community.docker.docker_swarm:
         state: present
+
+    - name: Add users for deployments
+      ansible.builtin.user:
+        state: present
+        name: "deploy-{{ item }}"
+        uid_min: 10000
+        password: "!"
+        shell: /usr/bin/bash
+        generate_ssh_key: true
+        ssh_key_type: ed25519
+        ssh_key_bits: 100
+        ssh_key_comment: "{{ item }}"
+      loop: "{{ projects }}"
+
+    - name: Create mount point for deployments
+      ansible.builtin.file:
+        state: directory
+        path: "/home/deploy-{{ item }}/htdocs"
+        owner: "deploy-{{ item }}"
+        group: "deploy-{{ item }}"
+        mode: "0750"
+      loop: "{{ projects }}"
+
+    - name: Create directories for deployments
+      ansible.builtin.file:
+        state: directory
+        path: "/var/www/{{ item }}/htdocs"
+        owner: "deploy-{{ item }}"
+        group: "deploy-{{ item }}"
+        mode: "0750"
+      loop: "{{ projects }}"
+
+    - name: Create bind mounts for deployments
+      ansible.posix.mount:
+        path: "/home/deploy-{{ item }}/htdocs"
+        src: "/var/www/{{ item }}/htdocs"
+        opts: bind
+        state: mounted
+        fstype: none
+      loop: "{{ projects }}"
