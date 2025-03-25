@@ -51,7 +51,7 @@ configs:
     name: caddyfile5
     file: Caddyfile
   alloy:
-    name: alloy5
+    name: alloy6
     file: config.alloy
   entrypoint:
     name: entrypoint1
