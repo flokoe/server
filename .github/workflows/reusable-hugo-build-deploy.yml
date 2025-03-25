@@ -1,0 +1,56 @@
+---
+
+name: Build and deploy website
+
+'on':
+  workflow_call:
+    inputs:
+      user:
+        type: string
+        required: true
+    secrets:
+      host_key:
+        required: true
+      private_key:
+        required: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.136.5"
+          extended: true
+
+      - name: Build
+        run: hugo --minify
+
+      - name: Deploy
+        # yamllint disable line-length
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.private_key }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.host_key }}" > ~/.ssh/known_hosts
+          rsync -avzhc --delete --stats public/ "${{ inputs.user }}@soerver.flokoe.de:htdocs/"
+        # yamllint enable line-length
