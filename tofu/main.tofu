@@ -184,3 +184,25 @@ resource "inwx_nameserver_record" "citizenalpha_wildcard" {
   ttl     = 1800
   content = "soerver.flokoe.de"
 }
+
+resource "inwx_nameserver_record" "flokoe_ipv4" {
+  domain  = "flokoe.de"
+  type    = "A"
+  ttl     = 1800
+  content = hcloud_server.main.ipv4_address
+}
+
+resource "inwx_nameserver_record" "flokoe_ipv6" {
+  domain  = "flokoe.de"
+  type    = "AAAA"
+  ttl     = 1800
+  content = hcloud_server.main.ipv6_address
+}
+
+resource "inwx_nameserver_record" "www_flokoe" {
+  domain  = "flokoe.de"
+  type    = "CNAME"
+  name    = "www.flokoe.de"
+  ttl     = 1800
+  content = "flokoe.de"
+}
