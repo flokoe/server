@@ -76,7 +76,7 @@ resource "hcloud_rdns" "main_ipv4" {
 resource "inwx_nameserver_record" "soerver_ipv4" {
   domain  = "flokoe.de"
   type    = "A"
-  name    = "soerver"
+  name    = "soerver.flokoe.de"
   ttl     = 1800
   content = hcloud_server.main.ipv4_address
 }
@@ -90,7 +90,97 @@ resource "hcloud_rdns" "server_ipv6" {
 resource "inwx_nameserver_record" "soerver_ipv6" {
   domain  = "flokoe.de"
   type    = "AAAA"
-  name    = "soerver"
+  name    = "soerver.flokoe.de"
   ttl     = 1800
   content = hcloud_server.main.ipv6_address
+}
+
+resource "inwx_nameserver_record" "citizen_alpha" {
+  domain  = "citizen-alpha.de"
+  type    = "A"
+  ttl     = 1800
+  content = hcloud_server.main.ipv4_address
+}
+
+resource "inwx_nameserver_record" "citizen_alpha_wildcard" {
+  domain  = "citizen-alpha.de"
+  type    = "CNAME"
+  name    = "*.citizen-alpha.de"
+  ttl     = 1800
+  content = "soerver.flokoe.de"
+}
+
+resource "inwx_nameserver_record" "citizen_alpha_eu" {
+  domain  = "citizen-alpha.eu"
+  type    = "A"
+  ttl     = 1800
+  content = hcloud_server.main.ipv4_address
+}
+
+resource "inwx_nameserver_record" "citizen_alpha_eu_wildcard" {
+  domain  = "citizen-alpha.eu"
+  type    = "CNAME"
+  name    = "*.citizen-alpha.eu"
+  ttl     = 1800
+  content = "soerver.flokoe.de"
+}
+
+resource "inwx_nameserver_record" "citizen_alpha_org" {
+  domain  = "citizen-alpha.org"
+  type    = "A"
+  ttl     = 1800
+  content = hcloud_server.main.ipv4_address
+}
+
+resource "inwx_nameserver_record" "citizen_alpha_org_wildcard" {
+  domain  = "citizen-alpha.org"
+  type    = "CNAME"
+  name    = "*.citizen-alpha.org"
+  ttl     = 1800
+  content = "soerver.flokoe.de"
+}
+
+resource "inwx_nameserver_record" "citizenalpha_eu" {
+  domain  = "citizenalpha.eu"
+  type    = "A"
+  ttl     = 1800
+  content = hcloud_server.main.ipv4_address
+}
+
+resource "inwx_nameserver_record" "citizenalpha_eu_wildcard" {
+  domain  = "citizenalpha.eu"
+  type    = "CNAME"
+  name    = "*.citizenalpha.eu"
+  ttl     = 1800
+  content = "soerver.flokoe.de"
+}
+
+resource "inwx_nameserver_record" "citizenalpha_org" {
+  domain  = "citizenalpha.org"
+  type    = "A"
+  ttl     = 1800
+  content = hcloud_server.main.ipv4_address
+}
+
+resource "inwx_nameserver_record" "citizenalpha_org_wildcard" {
+  domain  = "citizenalpha.org"
+  type    = "CNAME"
+  name    = "*.citizenalpha.org"
+  ttl     = 1800
+  content = "soerver.flokoe.de"
+}
+
+resource "inwx_nameserver_record" "citizenalpha" {
+  domain  = "citizenalpha.de"
+  type    = "A"
+  ttl     = 1800
+  content = hcloud_server.main.ipv4_address
+}
+
+resource "inwx_nameserver_record" "citizenalpha_wildcard" {
+  domain  = "citizenalpha.de"
+  type    = "CNAME"
+  name    = "*.citizenalpha.de"
+  ttl     = 1800
+  content = "soerver.flokoe.de"
 }
