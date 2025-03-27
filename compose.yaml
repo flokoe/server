@@ -12,6 +12,7 @@ services:
       - "/etc/configs/Caddyfile:/etc/caddy/Caddyfile"
       - "caddy_data:/data"
       - "caddy_config:/config"
+      - "/var/www:/srv"
 
   alloy:
     image: grafana/alloy:v1.7.1@sha256:da938bc7dc6a96be31d3c93badc445aed115ca39357734de7a338f78fa342cf7  # yamllint disable-line rule:line-length

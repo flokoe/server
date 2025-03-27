@@ -4,7 +4,17 @@
 	}
 }
 
-www.flokoe.de {
+www.citizenalpha.de \
+citizenalpha.eu www.citizenalpha.eu \
+citizenalpha.org www.citizenalpha.org \
+citizen-alpha.de www.citizen-alpha.de \
+citizen-alpha.eu www.citizen-alpha.eu \
+citizen-alpha.org www.citizen-alpha.org {
+  redir https://citizenalpha.de{uri}
+}
+
+citizenalpha.de {
 	log
+	root /srv/p743j/htdocs
 	file_server
 }
