@@ -8,16 +8,14 @@ services:
       - "80:80"
       - "443:443"
       - "443:443/udp"
-    configs:
-      - source: caddyfile
-        target: /etc/caddy/Caddyfile
     volumes:
+      - "/etc/configs/Caddyfile:/etc/caddy/Caddyfile"
       - "caddy_data:/data"
       - "caddy_config:/config"
 
   alloy:
     image: grafana/alloy:v1.7.1@sha256:da938bc7dc6a96be31d3c93badc445aed115ca39357734de7a338f78fa342cf7  # yamllint disable-line rule:line-length
-    entrypoint: /entrypoint.sh
+    entrypoint: /entrypoint-foo.sh
     command:
       - /bin/alloy
       - run
@@ -31,39 +29,15 @@ services:
       GCLOUD_SCRAPE_INTERVAL: 60s
     ports:
       - "12345:12345"
-    configs:
-      - source: alloy
-        target: /etc/alloy/config.alloy
-      - source: entrypoint
-        target: /entrypoint.sh
-        mode: 0755
-    secrets:
-      - gcloud_hosted_metrics_id
-      - gcloud_hosted_logs_id
-      - gcloud_rw_api_key
     volumes:
+      - "/etc/configs/config.alloy:/etc/alloy/config.alloy"
+      - "/etc/configs/entrypoint.sh:/entrypoint-foo.sh"
+      - "/etc/secrets/gcloud_hosted_metrics_id:/run/secrets/gcloud_hosted_metrics_id:ro"
+      - "/etc/secrets/gcloud_hosted_logs_id:/run/secrets/gcloud_hosted_logs_id:ro"
+      - "/etc/secrets/gcloud_rw_api_key:/run/secrets/gcloud_rw_api_key:ro"
       - "alloy:/var/lib/alloy/data"
       - "/:/host:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-
-configs:
-  caddyfile:
-    name: caddyfile5
-    file: Caddyfile
-  alloy:
-    name: alloy6
-    file: config.alloy
-  entrypoint:
-    name: entrypoint1
-    file: entrypoint.sh
-
-secrets:
-  gcloud_hosted_metrics_id:
-    file: secrets/gcloud_hosted_metrics_id
-  gcloud_hosted_logs_id:
-    file: secrets/gcloud_hosted_logs_id
-  gcloud_rw_api_key:
-    file: secrets/gcloud_rw_api_key
 
 volumes:
   caddy_data:

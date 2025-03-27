@@ -145,10 +145,6 @@
         enabled: true
         state: started
 
-    - name: Init a new swarm with default parameters
-      community.docker.docker_swarm:
-        state: present
-
     - name: Add users for deployments
       ansible.builtin.user:
         state: present
@@ -198,3 +194,15 @@
         state: mounted
         fstype: none
       loop: "{{ projects }}"
+
+    - name: Copy configs
+      ansible.builtin.copy:
+        src: configs
+        dest: /etc/
+        mode: preserve
+
+    - name: Copy secrets
+      ansible.builtin.copy:
+        src: secrets
+        dest: /etc/
+        mode: "0640"
