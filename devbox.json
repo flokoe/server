@@ -9,7 +9,8 @@
     "tflint@0.55.1",
     "trivy@0.59.1",
     "ansible@2.18.2",
-    "caddy@latest"
+    "caddy@latest",
+    "jmespath@latest"
   ],
   "shell": {
     "init_hook": [

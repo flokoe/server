@@ -4,3 +4,4 @@
 secrets/
 devbox.d
 terraform.tfstate*
+venv
