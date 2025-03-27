@@ -4,13 +4,35 @@
 	}
 }
 
+flokoe.de {
+	redir https://www.flokoe.de{uri}
+}
+
+www.flokoe.de {
+	log
+	root /srv/yrd39/htdocs
+	encode zstd gzip
+
+	@images path *.jpg *.jpeg *.png *.gif *.svg *.webp
+
+	route {
+		header Cache-Control no-cache
+		header @images Cache-Control "max-age=2592000, must-revalidate"
+		header /css/* Cache-Control "max-age=31536000, immutable"
+	}
+
+	file_server {
+		precompressed zstd gzip
+	}
+}
+
 www.citizenalpha.de \
 citizenalpha.eu www.citizenalpha.eu \
 citizenalpha.org www.citizenalpha.org \
 citizen-alpha.de www.citizen-alpha.de \
 citizen-alpha.eu www.citizen-alpha.eu \
 citizen-alpha.org www.citizen-alpha.org {
-  redir https://citizenalpha.de{uri}
+	redir https://citizenalpha.de{uri}
 }
 
 citizenalpha.de {
