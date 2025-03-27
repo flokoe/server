@@ -158,9 +158,19 @@
         shell: /usr/bin/bash
         generate_ssh_key: true
         ssh_key_type: ed25519
-        ssh_key_bits: 100
         ssh_key_comment: "{{ item }}"
       loop: "{{ projects }}"
+      register: deploy_users
+
+    - name: Add ssh keys to authorized_keys
+      ansible.posix.authorized_key:
+        user: "{{ item.name }}"
+        state: present
+        exclusive: true
+        key: "{{ item.ssh_public_key }}"
+      loop: "{{ deploy_users.results }}"
+      loop_control:
+        label: "{{ item.name }}"
 
     - name: Create mount point for deployments
       ansible.builtin.file:
