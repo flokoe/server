@@ -46,6 +46,22 @@ jobs:
       - name: Build
         run: hugo --minify
 
+      - name: Precompress
+        run: |
+          #!/usr/bin/env bash
+
+          FILES="$(find public -type f -size +511c)"
+
+          while IFS= read -r file
+          do
+              MIME_TYPE="$(file --mime-type -b "$file")"
+
+              if [[ $MIME_TYPE =~ ((application|font|text)\/.*|image\/svg\+xml) ]]; then
+                zstd -q -T0 -9 "$file"
+                pigz -k "$file"
+              fi
+          done <<< "$FILES"
+
       - name: Deploy
         # yamllint disable line-length
         run: |
