@@ -28,7 +28,7 @@ www.flokoe.de {
 			Content-Security-Policy "default-src 'none'; img-src 'self'; script-src 'self' https://plausible.io 'sha256-DxdO0KMifr4qBxX++GTv0w7cNu8FeArRvitEZf1FSrE=' 'sha256-bfloDFhW9eAYHv7CGM+kIiD7H2F+b/hGF5Wj8LOnLyo='; style-src 'self' 'unsafe-inline'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; connect-src 'self' https://plausible.io;"
 			X-Content-Type-Options nosniff
 			X-XSS-Protection "1; mode=block"
-			Strict-Transport-Security "max-age=300; includeSubDomains"
+			Strict-Transport-Security "max-age=604800; includeSubDomains"
 			Referrer-Policy strict-origin-when-cross-origin
 		}
 
