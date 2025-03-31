@@ -68,5 +68,5 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.private_key }}" > ~/.ssh/id_rsa
           echo "${{ secrets.host_key }}" > ~/.ssh/known_hosts
-          rsync -rlpgovzhc --delete --stats public/ "${{ inputs.user }}@soerver.flokoe.de:htdocs/"
+          rsync -avzhc --delete --stats public/ "${{ inputs.user }}@soerver.flokoe.de:htdocs/"
         # yamllint enable line-length
