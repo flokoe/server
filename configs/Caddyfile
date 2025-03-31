@@ -14,6 +14,7 @@ www.flokoe.de {
 	encode zstd gzip
 
 	@images path *.jpg *.jpeg *.png *.gif *.svg *.webp
+	@immutable path /css/* /js/*
 
 	handle_errors {
 		rewrite * /{err.status_code}.html
@@ -33,7 +34,7 @@ www.flokoe.de {
 		}
 
 		header @images Cache-Control "max-age=2592000, must-revalidate"
-		header /css/* Cache-Control "max-age=31536000, immutable"
+		header @immutable Cache-Control "max-age=31536000, immutable"
 	}
 
 	file_server {
