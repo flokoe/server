@@ -58,7 +58,7 @@ jobs:
 
               if [[ $MIME_TYPE =~ ((application|font|text)\/.*|image\/svg\+xml) ]]; then
                 zstd -q -T0 -9 "$file"
-                pigz -k "$file"
+                pigz -km "$file"
               fi
           done <<< "$FILES"
 
