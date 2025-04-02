@@ -16,6 +16,8 @@ name: Build and deploy website
         required: true
       private_key:
         required: true
+      plausible_token:
+        required: false
 
 jobs:
   build-deploy:
@@ -47,6 +49,8 @@ jobs:
           extended: true
 
       - name: Build
+        env:
+          HUGO_PLAUSIBLE_TOKEN: ${{ secrets.plausible_token }}
         run: hugo --minify
 
       - name: Precompress
